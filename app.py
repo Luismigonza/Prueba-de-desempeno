@@ -1,9 +1,10 @@
+# Import all functions from the services module
 from servicios import *
 
 
 
 def main():
-    #base de datos donde se guardara la informacion
+    # In-memory database where the book information will be stored.
     bd = [
         {'title': 'amor',
         'author': 'antonio', 
@@ -35,10 +36,12 @@ def main():
         'many': 4
         }
         ]
+    # In-memory database where sales records will be stored.
     bd_assign = []
 
+    # Main application loop to display the menu.
     while True:
-        print("\nBienvenidos a la libreria nacional")
+        print("\nWelcome to the National Library")
         print("\n===== MENU LIBRERÍA NACIONAL =====")
         print("1. Ingresar libro.")
         print("2. Mostrar libros.")
@@ -52,20 +55,22 @@ def main():
         
 
         option = input("Ingrese una opcion: ")
-
+        
+        # Validate that the input is a number.
         if not option.isdecimal():
             print("Opcion invalida")
             continue
 
         option = int(option)
 
-
-
+        # Option 1: Add a new book
         if option == 1:
             title = input("Titulo del libro: ")
+            # Validate that the title is not empty
             if not title:
                 print("El titulo no puede estar vacío.")
                 continue
+            # Get book details from user
             author = str(input("Nombre del autor del libro: "))
             if not author:
                 print("El nombre del autor no puede estar vacío.")
@@ -74,6 +79,7 @@ def main():
             if not types:
                 print("La fecha no puede estar vacía.")
                 continue
+            # Handle potential errors with numeric inputs
             try:
                 precio = float(input("Precio del libro: "))
                 many = int(input("Cantidad de libros: "))
@@ -89,10 +95,10 @@ def main():
                 continue
 
             add_book(bd,title,author,types,precio,many)
-
+# Option 2: Display all books
         elif option == 2:
             list_books(bd)
-
+# Option 3: Search for a book
         elif option == 3:
             nom = input("Titulo del libro a buscar: ")
             if not nom:
@@ -104,12 +110,14 @@ def main():
             else:
                 print("No se encontro el libro.")
 
+        # Option 4: Update a book
         elif option == 4:
             nom = input("Titulo del libro a actualizar: ")
             if not nom:
                 print("El Titulo no puede estar vacía.")
                 continue
             try:
+                # Get new data, allowing empty inputs to keep old values
                 author = input("Nuevo autor del libro (ENTER PARA NO CAMBIAR): ")
                 author = str(author) if author else None
 
@@ -122,6 +130,7 @@ def main():
                 many = input("Nueva cantidad de libros (ENTER PARA NO CAMBIAR): ")
                 many = int(many) if many else None
 
+                # Validate new numeric values
                 if precio is not None and precio < 0:
                     print("El precio no puede ser negativo.")
                     continue
@@ -136,6 +145,7 @@ def main():
 
             update_book(bd,nom,author,types,precio,many)
 
+        # Option 5: Delete a book
         elif option == 5:
             nom = input("Tutulo del libro a eliminar: ")
             if not nom:
@@ -143,11 +153,13 @@ def main():
                 continue
             delete_book(bd,nom)
 
+        # Option 6: Register a book sale
         elif option == 6:
             nom = input("Titulo del libro a vender: ")
             if not nom:
                 print("El Titulo no puede estar vacío.")
                 continue
+            # Check if the book exists before asking for more details
             book_to_sell = search_books(bd, nom)
             if not book_to_sell:
                 print("Error: el libro no existe.")
@@ -163,6 +175,7 @@ def main():
                 if not date:
                     print("La fecha no puede estar vacía.")
                     continue
+                # Handle discount input, defaulting to 0.0 if empty
                 discount_input = input("Si tiene descuento ingrese cuanto (ENTER SI NO TIENE DESCUENTO): ")
                 dis = float(discount_input) if discount_input else 0.0
                 
@@ -175,24 +188,17 @@ def main():
 
             assign_books(bd, bd_assign, nom, cus, amoun, date, dis)
 
+        # Option 7: Display sold books
         elif option == 7:
             list_assign_books(bd_assign)
 
+        # Option 8: Reports module
         elif option == 8:
             show_reports(bd, bd_assign)
 
 
 
 
-
+# Entry point of the script
 if __name__ == "__main__":
     main()
-
-
-"""
-detalles a revisar al final 
-1. la lista que devuelve al buscar un libro
-que no reciba datos nulos la ingresar un libro y si se puede a todos las funciones 
-
-
-"""

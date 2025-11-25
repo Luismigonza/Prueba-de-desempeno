@@ -1,8 +1,9 @@
 
+#traduce al ingles todos los comentarios y agrega comentarios que creas que faltan en ingles sin dañar el codigo SOLO A LOS COMENTARIOS NO TOQUES EL CODIGO
 
 def add_book(bd,title,author,types,precio,many):
     """
-    Agrega los libros a la base de datos.
+    Adds a new book to the database list.
     """
     
     books = {
@@ -17,9 +18,9 @@ def add_book(bd,title,author,types,precio,many):
 
 def list_books(bd):
     """
-    mostrar la lista de libros existentes en formato legible.
+    Displays the list of existing books in a readable format.
     """
-    
+    # Check if the database is empty before trying to print.
     if not bd:
         print("No hay Libros registrados.")
         return
@@ -30,22 +31,27 @@ def list_books(bd):
 
 def search_books(bd,nom):
     """
-    Buscar un libro por nombre. Retorna el diccionario o None
+    Searches for a book by its title.
+    Returns the book dictionary if found, otherwise returns None.
     """
     for book in bd:
         if book["title"] == nom:
             return book
+    # Return None if the loop finishes without finding the book.
     return None
 
 def update_book(bd, name, new_author=None, new_types=None, new_precio=None, new_many=None):
     """
-    Actualizar datos de un libro si existe.
+    Updates the data of a specific book if it exists.
+    Only the provided fields (not None) will be updated.
     """
+    # Find the book to update.
     book = search_books(bd,name)
     if not book:
         print("No se encontro el libro.")
         return
     
+    # Update each field only if a new value was provided.
     if new_author is not None:
         book["author"] = new_author
     if new_types is not None:
@@ -59,7 +65,7 @@ def update_book(bd, name, new_author=None, new_types=None, new_precio=None, new_
 
 def delete_book(bd,name):
     """
-    Eliminar libros por nombre
+    Deletes a book from the database by its title.
     """
     book = search_books(bd,name)
     if book:
@@ -70,25 +76,25 @@ def delete_book(bd,name):
 
 def assign_books(bd, bd_assign, name, custum, amount, date, discount):
     """
-    Registra la venta de un libro, asociando cliente, cantidad, fecha y descuento.
-    Valida y actualiza el stock disponible automáticamente.
+    Registers the sale of a book, associating customer, quantity, date, and discount.
+    It also validates and automatically updates the available stock.
     """
-    # 1. Buscar el libro para obtener sus detalles y stock
+    # 1. Find the book to get its details and current stock.
     book = search_books(bd, name)
-    # Esta validación es por seguridad, aunque app.py ya lo comprueba.
+    # This is a safety check, although app.py already verifies it.
     if not book:
         print(f"Error interno: El libro '{name}' no fue encontrado para la venta.")
         return
 
-    # 2. Validar stock disponible
+    # 2. Validate available stock.
     if book['many'] < amount:
         print(f"Error: No hay suficiente stock para '{name}'. Disponible: {book['many']}, Solicitado: {amount}")
         return
 
-    # 3. Actualizar el stock automáticamente
+    # 3. Automatically update the stock.
     book['many'] -= amount
 
-    # 4. Registrar la venta en la base de datos de ventas
+    # 4. Register the sale in the sales database.
     total_price = (book['precio'] * amount)
     final_price = total_price - discount if discount is not None else total_price
 
@@ -98,7 +104,7 @@ def assign_books(bd, bd_assign, name, custum, amount, date, discount):
 
 def list_assign_books(bd_assign):
     """
-    mostrar la lista de libros existentes en formato legible.
+    Displays the list of sold books (sales records) in a readable format.
     """
     if not bd_assign:
         print("No hay Libros registrados.")
@@ -110,21 +116,21 @@ def list_assign_books(bd_assign):
 
 def calculate_report_data(bd, bd_assign):
     """
-    Calcula todos los datos necesarios para los reportes a partir de las ventas.
-    Retorna un diccionario con los datos procesados o None si no hay ventas.
+    Calculates all the necessary data for the reports from the sales records.
+    Returns a dictionary with the processed data, or None if there are no sales.
     """
     if not bd_assign:
         return None
     
 
-    # 1. Unidades vendidas por libro
+    # 1. Calculate total units sold per book title.
     sold_count = {}
     for sale in bd_assign:
         title = sale['title']
         amount = sale['amount']
         sold_count[title] = sold_count.get(title, 0) + amount
 
-    # 2. Ventas totales (ingresos netos) por autor
+    # 2. Calculate total sales (net income) grouped by author.
     sales_by_author = {}
     for sale in bd_assign:
         book = search_books(bd, sale['title'])
@@ -132,14 +138,13 @@ def calculate_report_data(bd, bd_assign):
             author = book['author']
             sales_by_author[author] = sales_by_author.get(author, 0) + sale['final_price']
 
-    # 3. Ingreso neto y bruto
+    # 3. Calculate total net and gross income.
     net_income = sum(sale['final_price'] for sale in bd_assign)
     total_discounts = sum(sale.get('discount', 0.0) for sale in bd_assign)
     gross_income = net_income + total_discounts
 
-    # 4. Ranking de libros más vendidos (de mayor a menor)
+    # 4. Create a ranking of best-selling books (from most to least sold).
     ranking_sold_books = sorted(sold_count.items(), key=lambda item: item[1], reverse=True)
-
 
     return {
         "sold_count": sold_count,
@@ -151,9 +156,10 @@ def calculate_report_data(bd, bd_assign):
 
 def show_reports(bd, bd_assign):
     """
-    Mostrar los calculos realizados en "def calculate_report_data(bd, bd_assign):"
-    de forma legible para el usuario.
+    Displays the calculations performed in "calculate_report_data"
+    in a user-friendly format.
     """
+    # Get the calculated data.
     show = calculate_report_data(bd,bd_assign)
     if not show:
         return
