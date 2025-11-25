@@ -1,6 +1,3 @@
-
-#traduce al ingles todos los comentarios y agrega comentarios que creas que faltan en ingles sin dañar el codigo SOLO A LOS COMENTARIOS NO TOQUES EL CODIGO
-
 def add_book(bd,title,author,types,precio,many):
     """
     Adds a new book to the database list.
